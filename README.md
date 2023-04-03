@@ -25,3 +25,7 @@ Only use a personal access token in `settings.xml` that is scoped to the __repo_
     </servers>
 </settings>
 ```
+
+## TOOD:
+[Deploying JAR files on GitLab](https://medium.com/credera-engineering/deploying-jar-files-to-gitlab-using-the-maven-release-plugin-via-ci-cd-d17c64c2ea3)
+[GitLab as Maven Registry](https://kb.wisc.edu/shared-tools/page.php?id=114481)
