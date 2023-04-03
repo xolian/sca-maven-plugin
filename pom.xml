@@ -100,7 +100,7 @@
 
     <properties>
         <!-- properties -->
-        <repository-owner>fortifyadmin</repository-owner>
+        <repository-owner>xolian</repository-owner>
         <repository-name>sca-maven-plugin</repository-name>
         <branch-name>main</branch-name>
         <github.global.server>github</github.global.server>
