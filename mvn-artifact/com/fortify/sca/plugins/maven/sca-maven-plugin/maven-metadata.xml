@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.fortify.sca.plugins.maven</groupId>
+  <artifactId>sca-maven-plugin</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20230403043217</lastUpdated>
+  </versioning>
+</metadata>
