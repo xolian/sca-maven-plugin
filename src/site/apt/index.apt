@@ -1,0 +1,75 @@
+                                    ------
+                                    Introduction
+                                    ------
+                                    Hiroshi Abe
+                                    ------
+                                    2018-01-17
+
+Fortify SCA Maven Plugin
+
+    The SCA plugin is used to run Fortify SCA to translate and scan the project. This plugin is intended for use with Maven projects that are built using Maven 3.
+    Before using this plugin, ensure that Fortify SCA is properly installed and that sourceanalyzer is searchable using your PATH environment variable.
+
+* Plugin Installation
+
+    * Binary
+
+    When you install the binary version from a command prompt or terminal, navigate to the root directory, then run:
+
++----------+
+mvn install:install-file -Dfile=pom.xml -DpomFile=pom.xml
+mvn install:install-file -Dfile=xcodebuild/pom.xml -DpomFile=xcodebuild/pom.xml
+mvn install:install-file -Dfile=sca-maven-plugin/sca-maven-plugin-22.2.1.jar -DpomFile=sca-maven-plugin/pom.xml
++----------+
+
+    Install script: install.bat and install.sh are available.
+
+    * Source
+
+    When you install the source version from a command prompt or terminal, navigate to the root directory, then run:
+
++----------+
+mvn clean install
++----------+
+
+    []
+
+* Goals Overview
+
+    * {{{./clean-mojo.html}sca:clean}} Binds by default to the prepare-package phase. This goal attempts to clean all NST files associated with a specified build ID.
+
+    * {{{./translate-mojo.html}sca:translate}} Binds by default to the package phase. This goal translates files in specified project to NST files.
+
+    * {{{./exportBuildSession-mojo.html}sca:exportBuildSession}} Binds by default to the pre-integration-test phase. This goal exports a mobile build session for a specified build ID. This goal must be invoked after a translate goal.
+
+    * {{{./scan-mojo.html}sca:scan}} Binds by default to the integration-test phase. This goal performs analysis on a specified build ID. This goal must be invoked after a translate goal.
+
+    * {{{./startScanCentral-mojo.html}sca:startScanCentral}} Binds by default to the integration-test phase. This goal performs the ScanCentral for a specified build ID or mobile build session. This goal must be invoked after a translate goal.
+
+    * {{{./upload-mojo.html}sca:upload}} Binds by default to the post-integration-test phase. This goal uploads the analysis results to Software Security Center. This goal must be invoked after a scan goal.
+
+    []
+
+* Usage
+
+    General instructions on how to use the SCA plugin can be found on the {{{./usage.html}Usage}} page. If you have additional questions on using the SCA plugin, see the FAQ and feel free to contact Fortify Technical Support.
+
+    If you notice that the SCA plugin is missing a feature or has a defect, you can submit a feature request, suggestion, or bug report in our Customer Support Portal. When creating a new case, please provide a detailed description of your concern. This is especially critical if you are describing a defect so that the developers can reproduce the issue. Entire debug logs, POMs, or small demo projects attached to the issue are very useful.
+
+* References
+
+    Maven allows you to configure plugins in various ways. This document describes some ways to configure the SCA plugin, but does not cover basic Maven concept. For this reason, you might find the particular Maven documentation at the following links to be helpful.
+
+    * {{{https://maven.apache.org/}Apache Maven Project}}
+
+    * {{{https://maven.apache.org/pom.html}POM Reference}}
+
+    * {{{https://maven.apache.org/settings.html}Settings Reference}}
+
+    * {{{http://maven.apache.org/guides/mini/guide-configuring-plugins.html}Guide to Configuring Plug-ins}}
+
+    * {{{https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html}Introduction to the Build Lifecycle}}
+
+    * {{{https://maven.apache.org/ref/3.3.9/maven-core/lifecycles.html}Lifecycles Reference}}
+
+    []

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Fortify SCA Plugin for Maven">
+    <bannerLeft>
+        <src>images/fortify_black_square_logo_100x100.png</src>
+        <href>https://software.microfocus.com/software/enterprise-security</href>
+    </bannerLeft>
+    <bannerRight>
+        <src>http://maven.apache.org/images/maven-logo-black-on-white.png</src>
+        <href>http://maven.apache.org</href>
+    </bannerRight>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.4</version>
+    </skin>
+    <body>
+        <menu name="Overview">
+            <item name="Introduction" href="index.html" />
+            <item name="Goals" href="plugin-info.html" />
+            <item name="Usage" href="usage.html" />
+            <item name="FAQ" href="faq.html" />
+        </menu>
+        <menu name="Resources">
+            <item name="Fortify" href="https://software.microfocus.com/software/enterprise-security"/>
+        </menu>
+        <menu ref="reports"/>
+    </body>
+</project>

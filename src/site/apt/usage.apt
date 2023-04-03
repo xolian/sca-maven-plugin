@@ -1,0 +1,10 @@
+Usage
+
+    There are two ways to use the Maven plugin. One is direct invocation (for examples, mvn maven-compiler-plugin:compile) and the other is to associate the plugin with a Maven lifecycle phase and to run the phase (for example, mvn compile).
+    You can use the SCA plugin in both ways.
+    For direct invocation, you do not need to modify your pom.xml to run the SCA plugin. However, you need to run the clean, translate, and scan goals.
+    For Maven lifecycle phase association, you do not need to run multiple commands and you can run the SCA plugin as a part of your build process. However, you need to modify your pom.xml.
+
+    {{{./usage-direct-invocation.html}Direct Invocation}}
+
+    {{{./usage-association.html}Maven Lifecycle Phase Association}}

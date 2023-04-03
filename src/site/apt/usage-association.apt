@@ -1,0 +1,388 @@
+Maven Lifecycle Phase Association
+
+
+* Analyzing a single-module project
+
+    A single-module project is a Maven project that has single module.
+
+    By default, each goal of the SCA plugin is associated with the following Maven default lifecycle phase. For more information about Maven Lifecycle, see {{{https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html}Introduction to the Build Lifecycle}}.
+
+*--------------------+-----------------------+
+|| Goal              || Default Phase        |
+*--------------------+-----------------------+
+| clean              | prepare-package       |
+*--------------------+-----------------------+
+| translate          | package               |
+*--------------------+-----------------------+
+| exportBuildSession | pre-integration-test  |
+*--------------------+-----------------------+
+| scan               | integration-test      |
+*--------------------+-----------------------+
+| startScanCentral   | integration-test      |
+*--------------------+-----------------------+
+| upload             | post-integration-test |
+*--------------------+-----------------------+
+
+    To associate the SCA plugin with the Maven default lifecycle, modify your pom.xml. For more information about the profile, see {{{https://maven.apache.org/pom.html}POM Reference}}.
+
+    In the following example, the SCA plugin is declared in the profile section and the profile is inactive by default because typically you do not want to generate an FPR every time you build your project.
+
++----------+
+<project>
+    ...
+    <profiles>
+        <profile>
+            <id>fortify-sca</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fortify.sca.plugins.maven</groupId>
+                        <artifactId>sca-maven-plugin</artifactId>
+                        <version>VERSION</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>clean</goal>
+                                    <goal>translate</goal>
+                                    <goal>scan</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        ...
+    </profiles>
+    ...
+</project>
++----------+
+
+    Then run the following command:
+
++----------+
+mvn clean integration-test -P fortify-sca
++----------+
+
+    Note:
+
+        *If you do not specify VERSION, Maven uses the latest version of the sca-maven-plugin in the local repository.
+
+        []
+
+    The clean goal is associated with the prepare-package phase, the translate goal is associated with the package phase and the scan goal is associated with the integration-test phase. This ensures that Maven runs clean, translate, and scan goals in that order.
+
+    To run SCA for every build, modify your pom.xml as shown below:
+
++----------+
+<project>
+    ...
+    <profiles>
+        <profile>
+            <id>fortify-sca</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+    ...
++----------+
+
+    With this method, you do not need to explicitly activate the profile.
+
++----------+
+mvn clean integration-test
++----------+
+
+    To use the startScanCentral goal instead of the scan goal, specify the goals as shown below:
+
++----------+
+...
+<goals>
+    <goal>clean</goal>
+    <goal>translate</goal>
+    <goal>startScanCentral</goal>
+</goals>
+...
++----------+
+
+    Then run the following command:
+
++----------+
+mvn clean integration-test -P fortify-sca
++----------+
+
+    Note
+
+        * For information on using startScanCentral, see the Fortify ScanCentral User Guide.
+
+        []
+
+   To upload analysis results to Software Security Center after scanning, add the upload goal as shown below:
+
++----------+
+...
+<goals>
+    <goal>clean</goal>
+    <goal>translate</goal>
+    <goal>scan</goal>
+    <goal>upload</goal>
+</goals>
+...
++----------+
+
+    Then run the following command:
+
++----------+
+mvn clean post-integration-test -P fortify-sca
++----------+
+
+    When you want to change default lifecycle phase to run each goal, modify the pom.xml as shown below:
+
++----------+
+<project>
+    ...
+    <profiles>
+        <profile>
+            <id>fortify-sca</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fortify.sca.plugins.maven</groupId>
+                        <artifactId>sca-maven-plugin</artifactId>
+                        <version>VERSION</version>
+                        <executions>
+                            <execution>
+                                <id>default-sca-clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-sca-translate</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>translate</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-sca-scan</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        ...
+    </profiles>
+    ...
+</project>
++----------+
+
+    In this example, the SCA plugin scan goal is associated with the package phase, so you can specify package phase in the command.
+
++----------+
+mvn clean package -P fortify-sca
++----------+
+
+    To configure the scan goal, you can configure it as shown below:
+
++----------+
+<execution>
+    <id>default-sca-scan</id>
+    <phase>package</phase>
+    <goals>
+        <goal>scan</goal>
+    </goals>
+    <configuration>
+        <maxHeap>3G</maxHeap>
+        <findbugs>true</findbugs>
+        <rules>
+            <rule>/share/sca/rules/validation/validation-lib-cleanse-rules.xml</rule>
+            <rule>/share/sca/rules/thirdparty/api/acme-messaging-api.xml</rule>
+        </rules>
+    </configuration>
+</execution>
++----------+
+
+    For more information, see {{{./plugin-info.html}Goals}}.
+
+* Analyzing a multiple-module project
+
+    A multiple-module project is a Maven project that aggregates multiple modules. For example, in the sample project shown below, AcmePortal, aggregates three projects: Rocket, GiantRubberBand, and AcmeDeliveryService.
+
++----------+
+<project>
+   <groupId>net.cartoons.apps</groupId>
+   <artifactId>AcmePortal</artifactId>
+   <version>3.0</version>
+   <packaging>pom</packaging>
+   ...
+   <modules>
+      <module>Rocket</module>
+      <module>GiantRubberBand</module>
+      <module>AcmeDeliveryService</module>
+   </modules>
+</project>
++----------+
+
+    The SCA plugin supports aggregate mode and individual mode.
+
+    * Aggregate Mode (default)
+
+    By default, the SCA plugin will clean, translate and scan multiple modules in the aggregate and generate a single analysis results.
+
+    To associate the plugin with Maven default lifecycle, modify the pom.xml in your top level project. The usage is same as for a single-module project. The SCA plugin uses top level project artifact ID and version together as build ID, so you do not need to specify a build ID.
+
++----------+
+<project>
+    ...
+    <profiles>
+        <profile>
+            <id>fortify-sca</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fortify.sca.plugins.maven</groupId>
+                        <artifactId>sca-maven-plugin</artifactId>
+                        <version>VERSION</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>clean</goal>
+                                    <goal>translate</goal>
+                                    <goal>scan</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        ...
+    </profiles>
+    ...
+</project>
++----------+
+
+    Then run the following command:
+
++----------+
+mvn clean integration-test -P fortify-sca
++----------+
+
+    After executing the scan goal, an analysis results (FPR file) is saved in \<Top Level Project\>/target/fortify directory. You can set the activeByDefault to true, so you do not need to explicitly activate the fortify-sca profile.
+
+    []
+
+    * Individual Mode
+
+     To associate the SCA plugin with Maven default lifecycle, modify the pom.xml in your top level project.
+
+     To clean, translate and scan each module individually, set the fortify.sca.aggregate property to false as shown below:
+
++----------+
+mvn integration-test -Dfortify.sca.aggregate=false
++----------+
+
+    Alternatively, you can configure this in the pom.xml as shown below:
+
++----------+
+...
+<plugin>
+    <groupId>com.fortify.sca.plugins.maven</groupId>
+    <artifactId>sca-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <goals>
+                <goal>clean</goal>
+                <goal>translate</goal>
+                <goal>scan</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <aggregate>false</aggregate>
+    </configuration>
+</plugin>
+...
++----------+
+
+    Then run the following command:
+
++----------+
+mvn integration-test
++----------+
+
+    []
+
+    Notes:
+
+        * In individual mode, the SCA plugin ignores the user specified build ID because it needs to translate each module with a different build ID. When you directly invoke the translate goal and pass -Dfortify.sca.buildId=Test, the Test build ID is applied to all modules.
+
+        * The scan goal requires the output of the translate goal, so if you run the translate goal in aggregate mode and run the scan in individual mode as shown below, the analysis result is incorrect.
+
++----------+
+<project>
+    ...
+    <profiles>
+        <profile>
+            <id>fortify-sca</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.fortify.sca.plugins.maven</groupId>
+                        <artifactId>sca-maven-plugin</artifactId>
+                        <version>VERSION</version>
+                        <executions>
+                            <execution>
+                                <id>default-sca-clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>default-sca-translate</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>translate</goal>
+                                </goals>
+                                <configuration>
+                                    <aggregate>false</aggregate>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-sca-scan</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>scan</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        ...
+    </profiles>
+    ...
+</project>
++----------+
+
+        []

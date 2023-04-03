@@ -10,3 +10,18 @@ mvn clean compile package deploy
 
 #### M2 Settings
 Only use a personal access token in `settings.xml` that is scoped to the __repo__ and __user:email__, and includes
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <pluginGroups>
+    <pluginGroup>com.fortify.sca.plugins.maven</pluginGroup>
+  </pluginGroups>
+    <servers>
+        <server>
+            <id>github</id>
+            <password>INSERT GITHUB PERSONAL ACCESS TOKEN</password>
+        </server>
+    </servers>
+</settings>
+```

@@ -1,0 +1,139 @@
+Direct Invocation
+
+* Analyzing a single-module project
+
+    A single module project is a Maven project that has single module.
+
+    The following sequence of commands demonstrates how to generate an FPR for a single-module project. After executing the scan goal, an analysis results (FPR file) is saved in the target/fortify directory.
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:scan -Dfortify.sca.Xmx=3G
++----------+
+
+    Notes:
+
+        * The above sequence of commands illustrates how to increase the maximum JVM heap size for the SCA scan. For more information, see {{{./plugin-info.html}Goals}}.
+
+        * If you do not specify \<version\>, Maven always calls the latest version of the SCA plugin in the local repository.
+
+        * If your project generates sources during the build process, you need to run the translate goal with the package phase.
+
+        * If you want to use the short goal name, put the settings.xml in the local repository. You can run the plugin goal as sca:translate.
+
++----------+
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <pluginGroups>
+        <pluginGroup>com.fortify.sca.plugins.maven</pluginGroup>
+    </pluginGroups>
+</settings>
++----------+
+
+    []
+
+    To export a Mobile Build Session, run the following sequence of commands:
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:exportBuildSession
++----------+
+
+    To use the startScanCentral goal instead of the scan goal, run the following sequence of commands:
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:startScanCentral -Dfortify.ScanCentral.ctrl.url=<ScanCentral Controller URL> -Dfortify.ScanCentral.ssc.ScanCentralCtrlToken=<Your ScanCentralCtrlToken>
++----------+
+
+    Note:
+
+        * For information on using startScanCentral, see the Fortify ScanCentral User Guide.
+
+        []
+
+    To upload to SSC after scanning, run the following sequence of commands:
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:scan
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:upload -Dfortify.ssc.url=<SSC URL> -Dfortify.ssc.authToken=<Your AnalysisUploadToken>
++----------+
+
+* Analyzing a multiple-module project
+
+    A multiple-module project is a Maven project which aggregates multiple modules. For example, in sample project shown below, AcmePortal, aggregates three projects: Rocket, GiantRubberBand, and AcmeDeliveryService.
+
++----------+
+<project>
+   <groupId>net.cartoons.apps</groupId>
+   <artifactId>AcmePortal</artifactId>
+   <version>3.0</version>
+   <packaging>pom</packaging>
+   ...
+   <modules>
+      <module>Rocket</module>
+      <module>GiantRubberBand</module>
+      <module>AcmeDeliveryService</module>
+   </modules>
+</project>
++----------+
+
+    The SCA plugin supports aggregate mode and individual mode.
+
+    * Aggregate Mode (default)
+
+    By default, the SCA plugin will clean, translate and scan multiple modules in the aggregate and generate single analysis results file.
+
+    The following sequence of commands demonstrates how to generate an FPR for this type of project. The usage is same as for a single module project. The SCA plugin uses the top level project artifact ID and version together as the build ID, so you do not need to specify the build ID.
+
+    After executing a scan goal, the analysis results (FPR file) is saved in the \<Top Level Project\>/target/fortify directory.
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:scan
++----------+
+
+    []
+
+    * Individual Mode
+
+    To clean, translate, and scan each module individually, you need to set the fortify.sca.aggregate property to false.
+
+    The following sequence of commands demonstrates how to generate an FPR for this type of project. the SCA plugin generates an FPR file for each module.
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean -Dfortify.sca.aggregate=false
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate -Dfortify.sca.aggregate=false
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:scan -Dfortify.sca.aggregate=false
++----------+
+
+    []
+
+    Notes:
+
+        * In individual mode, the SCA plugin ignores the user specified build ID because it needs to translate each module with a different build ID.
+
+        * The scan goal requires the output of the translate goal, so if you run the translate goal in aggregate mode and run the scan in individual mode as shown below, the results are incorrect.
+
++----------+
+mvn clean
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:clean -Dfortify.sca.aggregate=false
+mvn package com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:translate
+mvn com.fortify.sca.plugins.maven:sca-maven-plugin:<version>:scan -Dfortify.sca.aggregate=false
++----------+
+
+        []
