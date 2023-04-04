@@ -26,6 +26,10 @@ Only use a personal access token in `settings.xml` that is scoped to the __repo_
 </settings>
 ```
 
+#### Download and install plugin
+
+`mvn dependency:get -DrepositoryUrl=https://maven.pkg.github.com/xolian -Dartifact=com.fortify.sca.plugins.maven:sca-maven-plugin:22.2.1`
+
 ## TODO:
 * [Deploying JAR files on GitLab](https://medium.com/credera-engineering/deploying-jar-files-to-gitlab-using-the-maven-release-plugin-via-ci-cd-d17c64c2ea3)
 
